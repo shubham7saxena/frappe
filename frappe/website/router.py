@@ -30,9 +30,21 @@ def make_page_context(path):
 
 	context.doctype = context.ref_doctype
 	context.title = context.page_title
-	context.pathname = frappe.local.path
-
+	pathname = frappe.local.path
+	delimeter = '?'
+	path_parameters, delimeter = make_route_string(frappe.local.form_dict,delimeter)
+	context.pathname = pathname + path_parameters
+	context.delimeter = delimeter
 	return context
+
+def make_route_string(parameters, delimeter=None):
+	route_string = ""
+	if isinstance(parameters,dict):
+		for key in parameters:
+			per_parameter_path = "?" + key + "=" + str(parameters[key])
+			route_string = route_string + per_parameter_path
+			delimeter = '&'
+	return (route_string,delimeter)
 
 def resolve_route(path):
 	"""Returns the page route object based on searching in pages and generators.
